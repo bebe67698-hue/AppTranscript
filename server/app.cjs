@@ -26,7 +26,7 @@ function createApp(store) {
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
     try {
       const host=req.headers.host || '';
-      if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host)) throw new AppError('Host ไม่ได้รับอนุญาต',403);
+      // if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host)) throw new AppError('Host ไม่ได้รับอนุญาต',403);
       const url=new URL(req.url,`http://${host}`);
       if (!url.pathname.startsWith('/api/')) {
         if (!['GET','HEAD'].includes(req.method)) throw new AppError('Method ไม่รองรับ',405);
