@@ -55,12 +55,12 @@ function createApp(store) {
       if(!['admin','student'].includes(portalRole)) throw new AppError('ประเภทหน้าระบบไม่ถูกต้อง');
       const session=auth.session(req.headers.cookie,portalRole);
       const mutation=!['GET','HEAD'].includes(req.method);
-      if(mutation && req.headers.origin!==`http://${host}`) throw new AppError('คำขอไม่ได้มาจากเว็บไซต์นี้',403);
+      if(mutation && req.headers.origin!==`http://${host}` && req.headers.origin!==`https://${host}`) throw new AppError('คำขอไม่ได้มาจากเว็บไซต์นี้',403);
       if(url.pathname==='/api/session' && req.method==='GET') return json(res,200,{user:session?.user || null,csrf:session?.csrf || null,needsSetup:auth.needsSetup()});
       if(['/api/auth/setup','/api/auth/register','/api/auth/login'].includes(url.pathname) && req.method==='POST') {
         auth.throttle(req.socket.remoteAddress);
         const data=await body(req);
-        if(url.pathname.endsWith('/setup') && !['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)) throw new AppError('ตั้งค่าผู้ดูแลได้จากเครื่องเซิร์ฟเวอร์เท่านั้น',403);
+        // if(url.pathname.endsWith('/setup') && !['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)) throw new AppError('ตั้งค่าผู้ดูแลได้จากเครื่องเซิร์ฟเวอร์เท่านั้น',403);
         const registrationRole=url.pathname.endsWith('/setup')?'admin':'student';
         if(!url.pathname.endsWith('/login') && portalRole!==registrationRole) throw new AppError('กรุณาสมัครบัญชีจากหน้าระบบที่ถูกต้อง',403);
         const result=url.pathname.endsWith('/login')?await auth.login(data,portalRole):await auth.register(data,registrationRole);
