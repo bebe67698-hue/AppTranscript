@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบผู้ดูแล — IT Transfer</title>
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="portal.css">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/vendor/exceljs/exceljs.min.js" defer></script><script src="/vendor/tesseract/tesseract.min.js" defer></script><script src="/shared/pdf-mapping.cjs" defer></script><script src="/shared/student-transfer-parser.cjs" defer></script><script src="/shared/excel-mapping-parser.cjs" defer></script><script src="/portal/admin.js" type="module"></script>
+</head>
+<body class="portal-body">
+  <a class="skip-link" href="#content">ข้ามไปยังเนื้อหา</a>
+  <div id="auth-panel" class="auth-panel" hidden></div>
+  <div id="workspace" class="workspace" hidden>
+    <aside id="sidebar" class="sidebar">
+      <a href="/" class="brand">IT <span class="brand-dot">Transfer.</span></a>
+      <p class="sidebar-caption">ระบบช่วยตรวจสอบการเทียบโอน<br>หลักสูตรเทคโนโลยีสารสนเทศ</p>
+      <div class="sidebar-nav" aria-label="เมนูผู้ดูแลระบบ">
+        <button data-nav="overview" class="active"><span aria-hidden="true">◫</span> ภาพรวม</button>
+        <button data-nav="curricula"><span aria-hidden="true">▤</span> หลักสูตร</button>
+        <button data-nav="courses"><span aria-hidden="true">▧</span> รายวิชา</button>
+        <button data-nav="mappings"><span aria-hidden="true">⇄</span> คู่เทียบรายวิชา</button>
+        <button data-nav="student-transfers"><span aria-hidden="true">↥</span> นำเข้าข้อมูลรายบุคคล</button>
+      </div>
+      <div class="sidebar-bottom"><a href="/">← กลับหน้าหลัก</a><button id="logout">ออกจากระบบ</button></div>
+    </aside>
+    <div class="portal-main">
+      <header class="portal-topbar"><button id="portal-menu" class="portal-menu" aria-label="เปิดเมนูระบบ" aria-controls="sidebar" aria-expanded="false">☰</button><span>ระบบผู้ดูแล <span class="breadcrumb-separator">/</span> จัดการข้อมูลหลักสูตร</span><div class="user-chip"><span class="avatar">A</span><span id="user-name"></span><small>Admin</small></div></header>
+      <main id="content" class="portal-content">
+        <div id="notice" class="notice" role="status" hidden></div>
+        <section data-view="overview">
+          <div class="page-heading"><div><span class="section-label">ADMIN WORKSPACE</span><h1>ข้อมูลพร้อม นักศึกษาก็ก้าวต่อได้</h1><p>จัดการข้อมูลหลักสูตรและคู่เทียบที่ใช้ตรวจสอบร่วมกัน</p></div></div>
+          <div id="overview-counts" class="count-grid"></div>
+          <section class="surface getting-started"><h2>เริ่มต้นจัดการข้อมูล</h2><ol><li><strong>เพิ่มหลักสูตร</strong><span>กำหนดปี พ.ศ. และชื่อหลักสูตร IT</span></li><li><strong>เพิ่มรายวิชาในหลักสูตร</strong><span>ระบุรหัสวิชา ชื่อรายวิชา และหน่วยกิต</span></li><li><strong>กำหนดคู่เทียบรายวิชา</strong><span>เชื่อมรหัสวิชาต้นทางกับรายวิชาในปีหลักสูตรที่เลือก</span></li><li><strong>นำเข้าข้อมูลรายบุคคล</strong><span>อัปโหลดไฟล์ Excel แบบสรุปเทียบโอนรายบุคคลเพื่อให้นักศึกษาตรวจเช็ค</span></li></ol><button id="start-curricula" class="button primary">เริ่มจัดการหลักสูตร →</button></section>
+          <div class="info-banner"><strong>มีข้อมูลแบบสรุปเทียบโอนของนักศึกษาแล้ว?</strong><p>ไปที่เมนู "นำเข้าข้อมูลรายบุคคล" เพื่ออัปโหลดไฟล์ Excel แบบสรุปเทียบโอนรายบุคคลเข้าระบบ</p></div>
+        </section>
+        <section data-view="curricula" hidden></section>
+        <section data-view="courses" hidden></section>
+        <section data-view="mappings" hidden></section>
+        <section data-view="student-transfers" hidden>
+          <div class="page-heading">
+            <div>
+              <span class="section-label">STUDENT TRANSFER EVALUATION</span>
+              <h1>นำเข้าข้อมูลเทียบโอนรายบุคคล</h1>
+              <p>นำเข้าไฟล์ Excel แบบสรุปเทียบโอนผลการเรียนรายวิชา / กลุ่มวิชา (.xlsx) ตรวจทานและจัดเก็บเข้าระบบ</p>
+            </div>
+          </div>
+          <div class="surface import-upload">
+            <h2>เลือกไฟล์ Excel แบบสรุปรายวิชาที่ขอเทียบโอน</h2>
+            <p class="muted">รองรับไฟล์ Excel (.xlsx) แบบสรุปรายวิชาที่ขอเทียบโอนผลการเรียนรายวิชา / กลุ่มวิชา ทางการของมหาวิทยาลัย (สกัดรหัสนักศึกษา, ชื่อ-สกุล, แผนการเทียบโอน ปวส. ➔ ป.ตรี และสรุปหน่วยกิตอัตโนมัติ)</p>
+            <label class="field">ไฟล์ Excel แบบสรุปเทียบโอน (.xlsx)
+              <input type="file" id="student-transfer-file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+            </label>
+            <div class="upload-actions" style="justify-content:flex-start; margin-top:10px;">
+              <button id="preview-student-transfer" class="button primary" type="button">อ่านและวิเคราะห์ไฟล์ Excel</button>
+            </div>
+            <p id="student-transfer-progress" class="ocr-progress" role="status" style="margin-top:10px;"></p>
+          </div>
+          <section id="student-transfer-preview" class="surface" hidden>
+            <h2>ตรวจสอบข้อมูลก่อนบันทึก</h2>
+            <div id="student-transfer-meta-card" class="stat-chips"></div>
+            <div id="student-transfer-courses-preview" style="margin:20px 0;"></div>
+            <p class="import-warning">ระบบจะบันทึกข้อมูลผลเทียบโอนของนักศึกษารายนี้เข้าระบบ หากมีรหัสนักศึกษานี้อยู่แล้วจะทำการอัปเดตข้อมูลล่าสุด</p>
+            <label class="review-confirm"><input type="checkbox" id="confirm-student-transfer">ฉันได้ตรวจสอบความถูกต้องของข้อมูลนักศึกษาและรายวิชาเทียบโอนทั้งหมดแล้ว</label>
+            <div class="dialog-actions" style="margin-top:15px;">
+              <button id="commit-student-transfer" class="button primary" type="button">ยืนยันบันทึกข้อมูลรายบุคคล</button>
+            </div>
+          </section>
+          <section class="surface">
+            <div class="section-toolbar">
+              <div>
+                <h2>รายชื่อนักศึกษาที่นำเข้าข้อมูลเทียบโอนแล้ว</h2>
+                <p class="muted">นักศึกษาสามารถกรอกรหัสนักศึกษาและอัปโหลด Transcript เพื่อตรวจเช็คผลเทียบโอนทางการได้ทันที</p>
+              </div>
+              <div class="table-btn-group">
+                <button id="refresh-student-transfers" class="button secondary" type="button">↻ รีเฟรชรายการ</button>
+                <button id="clear-student-transfers" class="button secondary-danger" type="button">🗑️ ลบทั้งหมด</button>
+              </div>
+            </div>
+            <div id="student-transfers-table-container"></div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="portal-footer"><strong>IT Transfer.</strong><span>เฉพาะหลักสูตร IT · ไม่เชื่อม REGIS · ไม่ใช่การอนุมัติเทียบโอนอย่างเป็นทางการ</span></footer>
+    </div>
+  </div>
+  <dialog id="edit-dialog" class="app-dialog record-dialog" aria-labelledby="edit-title"><div class="dialog-header"><h2 id="edit-title"></h2><button id="close-edit" class="icon-button" aria-label="ปิดหน้าต่างแก้ไข">×</button></div><form id="edit-form"><div id="edit-fields" class="form-fields"></div><p id="edit-error" class="form-error" role="alert"></p><div class="dialog-actions"><button id="cancel-edit" class="button secondary" type="button">ยกเลิก</button><button id="save-record" class="button primary" type="submit">บันทึกข้อมูล</button></div></form></dialog>
+  <noscript>กรุณาเปิด JavaScript เพื่อใช้งานระบบ</noscript>
+  <dialog id="delete-dialog" class="app-dialog record-dialog" aria-labelledby="delete-title" aria-describedby="delete-description delete-warning"><div class="dialog-header"><h2 id="delete-title"></h2><button id="close-delete" class="icon-button" aria-label="ปิดหน้าต่างลบ">×</button></div><form id="delete-form"><p id="delete-description"></p><p id="delete-warning" class="import-warning"></p><p>การลบนี้ไม่สามารถย้อนกลับได้ กรุณาตรวจสอบรายการก่อนยืนยัน</p><p id="delete-error" class="form-error" role="alert"></p><div class="dialog-actions"><button id="cancel-delete" class="button secondary" type="button" autofocus>ยกเลิก</button><button id="confirm-delete" class="button danger" type="submit">ยืนยันลบข้อมูล</button></div></form></dialog>
+  <dialog id="clear-dialog" class="app-dialog record-dialog" aria-labelledby="clear-title" aria-describedby="clear-description clear-warning"><div class="dialog-header"><h2 id="clear-title">ลบข้อมูลทั้งหมด</h2><button id="close-clear" class="icon-button" aria-label="ปิดหน้าต่างลบ">×</button></div><form id="clear-form"><p id="clear-description" style="font-weight:600;"></p><div id="clear-scope-container" class="form-fields" style="margin:12px 0;"><label class="field" id="clear-scope-label">ขอบเขตที่ต้องการลบ<select id="clear-scope-select"></select></label></div><p id="clear-warning" class="import-warning">⚠️ การลบข้อมูลทั้งหมดจะไม่สามารถย้อนกลับได้ กรุณาตรวจสอบรายการก่อนยืนยัน</p><label class="review-confirm" style="margin:14px 0;"><input type="checkbox" id="confirm-clear" required>ฉันเข้าใจและยืนยันการลบข้อมูลตามขอบเขตที่เลือก</label><p id="clear-error" class="form-error" role="alert"></p><div class="dialog-actions"><button id="cancel-clear" class="button secondary" type="button" autofocus>ยกเลิก</button><button id="confirm-clear-btn" class="button danger" type="submit">ยืนยันลบทั้งหมด</button></div></form></dialog>
+  <dialog id="excel-mapping-dialog" class="app-dialog pdf-mapping-dialog" aria-labelledby="excel-dialog-title"><div class="dialog-header"><h2 id="excel-dialog-title">นำเข้าตารางคู่เทียบรายวิชาจากไฟล์ Excel (Matrix)</h2><button id="close-excel-mapping-dialog" class="icon-button" aria-label="ปิดหน้าต่างนำเข้า Excel">×</button></div><div class="pdf-dialog-content"><p class="muted">อัปโหลดไฟล์ Excel (.xlsx) ตารางคู่เทียบรายวิชาตามโครงสร้างหลักสูตร (เช่น ตารางเทียบโอน มทร.ล้านนา พ.ศ. 2565 เทียบกับ รายวิชา ปวส. อาชีวศึกษา ปี 2567, 2563, 2557) ระบบจะอ่านรหัสวิชาต้นทาง-ปลายทางและเงื่อนไขเทียบโอนให้อัตโนมัติ</p><div class="pdf-upload-form form-fields"><label class="field">ปีหลักสูตร IT ปลายทางที่จะบันทึกคู่เทียบ<select id="excel-mapping-import-curriculum" required></select></label><label class="field">ไฟล์ Excel ตารางคู่เทียบ (.xlsx)<input type="file" id="excel-mapping-file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></label><div class="upload-actions" style="justify-content:flex-start; margin-top:5px;"><button id="start-excel-mapping-import" class="button primary" type="button">อ่านและวิเคราะห์ตาราง Excel</button></div><p id="excel-mapping-import-progress" class="ocr-progress" role="status" style="margin-top:8px;"></p></div><section id="excel-mapping-preview-section" hidden style="margin-top:20px;"><hr style="border:0; border-top:1px solid var(--line); margin:20px 0;"><h3>ตัวอย่างข้อมูลคู่เทียบที่พบจาก Excel</h3><div id="excel-mapping-stats" class="stat-chips"></div><p id="excel-mapping-summary-note" class="muted"></p><div id="excel-mapping-unmatched-notice" class="import-warning" hidden></div><div id="excel-mapping-preview-tables" style="margin:15px 0;"></div><label class="review-confirm" style="margin:18px 0;"><input type="checkbox" id="confirm-excel-mapping-import">ฉันได้ตรวจสอบรายการคู่เทียบและยืนยันการเพิ่ม/อัปเดตข้อมูลตามไฟล์นี้แล้ว</label><div class="dialog-actions" style="margin-top:15px;"><button id="cancel-excel-mapping-dialog-btn" class="button secondary" type="button">ยกเลิก</button><button id="commit-excel-mapping-import" class="button primary" type="button">ยืนยันบันทึกคู่เทียบทั้งหมด</button></div></section></div></dialog>
+  <dialog id="pdf-mapping-dialog" class="app-dialog pdf-mapping-dialog" aria-labelledby="pdf-dialog-title"><div class="dialog-header"><h2 id="pdf-dialog-title">นำเข้าคู่เทียบรายวิชาจากไฟล์ PDF</h2><button id="close-pdf-dialog" class="icon-button" aria-label="ปิดหน้าต่างนำเข้า PDF">×</button></div><div class="pdf-dialog-content"><p class="muted">อัปโหลดไฟล์ PDF ตารางประกาศเทียบโอน (เช่น ตารางประกาศเทียบโอน มทร.ล้านนา / อาชีวศึกษา ปวส. เข้า ป.ตรี) ระบบจะสกัดตารางโดยจับคู่วิชา ปวส. ทางขวากับวิชา ป.ตรี ซ้ายสุดให้อัตโนมัติ</p><div class="pdf-upload-form form-fields"><label class="field">ปีหลักสูตร IT ปลายทางที่จะบันทึกคู่เทียบ<select id="pdf-import-curriculum" required></select></label><label class="field">ไฟล์ PDF ตารางประกาศเทียบโอน<input type="file" id="pdf-mapping-file" accept=".pdf,application/pdf" required></label><div class="upload-actions" style="justify-content:flex-start; margin-top:5px;"><button id="start-pdf-import" class="button primary" type="button">อ่านและวิเคราะห์ตาราง PDF</button><button id="cancel-pdf-import" class="button secondary" type="button" hidden>ยกเลิก</button></div><p id="pdf-import-progress" class="ocr-progress" role="status" style="margin-top:8px;"></p></div><section id="pdf-preview-section" hidden style="margin-top:20px;"><hr style="border:0; border-top:1px solid var(--line); margin:20px 0;"><h3>ตัวอย่างข้อมูลคู่เทียบที่พบจาก PDF</h3><div id="pdf-stats" class="stat-chips"></div><p id="pdf-summary-note" class="muted"></p><div id="pdf-unmatched-notice" class="import-warning" hidden></div><div id="pdf-preview-tables" style="margin:15px 0;"></div><label class="review-confirm" style="margin:18px 0;"><input type="checkbox" id="confirm-pdf-import">ฉันได้ตรวจสอบรายการคู่เทียบและยืนยันการเพิ่ม/อัปเดตข้อมูลตามไฟล์นี้แล้ว</label><div class="dialog-actions" style="margin-top:15px;"><button id="cancel-pdf-dialog-btn" class="button secondary" type="button">ยกเลิก</button><button id="commit-pdf-import" class="button primary" type="button">ยืนยันบันทึกคู่เทียบทั้งหมด</button></div></section></div></dialog>
+  <dialog id="student-detail-dialog" class="app-dialog pdf-mapping-dialog" aria-labelledby="student-detail-title"><div class="dialog-header"><h2 id="student-detail-title">รายละเอียดผลการเทียบโอน</h2><button id="close-student-detail" class="icon-button" aria-label="ปิดหน้าต่าง">×</button></div><div class="pdf-dialog-content"><div id="student-detail-meta" class="stat-chips"></div><div id="student-detail-table-container" style="margin-top:15px;"></div><div class="dialog-actions" style="margin-top:20px;"><button id="close-student-detail-btn" class="button secondary" type="button">ปิด</button></div></div></dialog>
+</body>
+</html>

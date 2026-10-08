@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#059669">
+  <meta name="description" content="ทำความเข้าใจการเทียบโอนรายวิชาจาก Transcript สำหรับนักศึกษาหลักสูตรเทคโนโลยีสารสนเทศ พร้อมทดลองตรวจสอบข้อมูลรายวิชาเบื้องต้น">
+  <title>IT Transfer — ตรวจสอบการเทียบโอนรายวิชาจาก Transcript</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23059669'/%3E%3Cpath d='m6 16 14-7 14 7-14 7Z' fill='white'/%3E%3Cpath d='M12 22v7q8 6 16 0v-7' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="matching.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5Z"/><path d="M6 11v6c4 3 8 3 12 0v-6M22 9v7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 3H5v18h14V9l-6-6Zm0 0v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v16M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6Z"/><path d="m8 11 3 3 5-5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1s-1 7 1 9l7 7 7-7c2-2 4-6 1-9Z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M5 4h14v13H5ZM2 20h20M8 20h8"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h16M3 11h10M3 17h7m4 0 3 3 5-7"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="IT Transfer หน้าหลัก"><svg class="icon brand-icon"><use href="#i-cap"/></svg><span>IT Transfer<span class="brand-dot">.</span></span></a>
+      <nav id="navigation" aria-label="เมนูหลัก">
+        <a href="#how-it-works">ขั้นตอนการใช้งาน</a><a href="#criteria">เงื่อนไขการเทียบโอน</a><a href="#faq">คำถามที่พบบ่อย</a>
+      </nav>
+      <button class="admin-link" data-open-admin><svg class="icon"><use href="#i-grid"/></svg><span>สำหรับผู้ดูแลระบบ</span></button>
+      <button class="menu-toggle" aria-label="เปิดเมนู" aria-controls="navigation" aria-expanded="false"><svg class="icon"><use href="#i-menu"/></svg></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1>เช็กวิชาที่เทียบได้<br><span>ก่อนเริ่มต้นบทใหม่</span></h1>
+          <p>เปลี่ยนข้อมูลใน Transcript ให้เป็นแนวทางวางแผนการเรียน<br class="desktop-break"> ตรวจสอบรายวิชาที่เทียบโอนได้สำหรับ<br class="desktop-break">หลักสูตรเทคโนโลยีสารสนเทศ ในไม่กี่ขั้นตอน</p>
+          <div class="hero-actions"><button class="button primary" data-student-system><svg class="icon"><use href="#i-file"/></svg>เริ่มตรวจสอบรายวิชา<svg class="icon arrow"><use href="#i-arrow"/></svg></button><a class="button secondary" href="#how-it-works"><svg class="icon"><use href="#i-book"/></svg>ดูขั้นตอนการใช้งาน</a></div>
+          <div class="hero-note"><svg class="icon"><use href="#i-shield"/></svg>ตรวจสอบเบื้องต้น เพื่อวางแผนการเรียนอย่างมั่นใจ</div>
+        </div>
+        <div class="hero-visual" aria-label="ภาพตัวอย่าง Transcript และผลการตรวจสอบรายวิชา ข้อมูลทั้งหมดเป็นข้อมูลสาธิต">
+          <div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div>
+          <div class="visual-caption">ก้าวต่อไปของคุณ<br><span>เริ่มจากสิ่งที่เรียนมา</span><svg viewBox="0 0 150 20" aria-hidden="true"><path d="M4 15Q70-3 145 5"/></svg></div>
+          <div class="transcript-paper">
+            <div class="paper-heading"><span class="paper-seal"><svg class="icon"><use href="#i-cap"/></svg></span><div><strong>ACADEMIC TRANSCRIPT</strong><span>ใบแสดงผลการศึกษา · ตัวอย่างข้อมูล</span></div></div>
+            <div class="paper-meta"><span>ชื่อ–นามสกุล <b>นักศึกษาตัวอย่าง</b></span><span>สาขาวิชา <b>เทคโนโลยีสารสนเทศ</b></span></div>
+            <table class="paper-table"><thead><tr><th>รหัสวิชา</th><th>ชื่อรายวิชา</th><th>หน่วยกิต</th><th>เกรด</th></tr></thead><tbody>
+              <tr class="paper-highlight"><td>CS101</td><td>การเขียนโปรแกรมเบื้องต้น</td><td>3</td><td>B+</td></tr>
+              <tr><td>CS102</td><td>โครงสร้างข้อมูล</td><td>3</td><td>A</td></tr>
+              <tr><td>IT201</td><td>ระบบฐานข้อมูล</td><td>3</td><td>B</td></tr>
+              <tr><td>IT202</td><td>การวิเคราะห์และออกแบบระบบ</td><td>3</td><td>D+</td></tr>
+              <tr><td>GE101</td><td>ภาษาอังกฤษเพื่อการสื่อสาร</td><td>3</td><td>B</td></tr>
+            </tbody></table><div class="paper-lines"><i></i><i></i><i></i></div><div class="paper-bottom">เอกสารตัวอย่างสำหรับสาธิตการทำงาน</div>
+          </div>
+          <div class="result-paper"><div class="result-paper-title"><span class="tiny-check"><svg class="icon"><use href="#i-check"/></svg></span><strong>ผลการตรวจสอบ</strong></div><p>ตัวอย่างการเทียบรายวิชา</p><div class="mini-result"><span>CS101</span><span class="status eligible">เทียบได้</span></div><div class="mini-result"><span>CS102</span><span class="status eligible">เทียบได้</span></div><div class="mini-result"><span>IT201</span><span class="status eligible">เทียบได้</span></div><div class="mini-result"><span>IT202</span><span class="status ineligible">เทียบไม่ได้</span></div><div class="mini-result"><span>GE101</span><span class="status unknown">ไม่พบข้อมูล</span></div><span class="result-footnote">ตามเงื่อนไขของหลักสูตรที่เลือก</span></div>
+          <span class="visual-spark spark-one"></span><span class="visual-spark spark-two"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="benefit-section" aria-label="ประโยชน์ของระบบ"><div class="container benefits">
+      <div class="benefit"><svg class="icon"><use href="#i-spark"/></svg><div><h2>ลดขั้นตอนที่ยุ่งยาก</h2><p>ใช้ OCR ช่วยอ่านข้อมูลจาก Transcript</p></div></div>
+      <div class="benefit"><svg class="icon"><use href="#i-shield"/></svg><div><h2>ตรวจสอบอย่างมีหลักเกณฑ์</h2><p>อ้างอิงคู่เทียบและปีหลักสูตรที่กำหนด</p></div></div>
+      <div class="benefit"><svg class="icon"><use href="#i-heart"/></svg><div><h2>คุณตรวจทานได้ทุกข้อมูล</h2><p>แก้ไขข้อมูลที่อ่านได้ก่อนเริ่มตรวจสอบ</p></div></div>
+    </div></section>
+
+    <section id="how-it-works" class="workflow section-space">
+      <div class="container"><div class="section-heading centered"><span class="section-label">HOW IT WORKS</span><h2>จาก Transcript สู่ผลการเทียบโอน<br class="mobile-break"> ใน 3 ขั้นตอน</h2><p>เริ่มต้นง่าย ๆ แล้วให้ข้อมูลช่วยคุณวางแผนก้าวต่อไป</p></div>
+        <div class="steps">
+          <article class="step"><div class="step-art"><span class="step-number">01</span><svg class="icon"><use href="#i-upload"/></svg></div><h3>อัปโหลด Transcript</h3><p>เลือกใบแสดงผลการศึกษาในรูปแบบ<br>PDF หรือ JPG ที่เห็นข้อมูลชัดเจน</p><span class="step-tag">PDF / JPG</span></article>
+          <svg class="icon step-arrow"><use href="#i-arrow"/></svg>
+          <article class="step"><div class="step-art"><span class="step-number">02</span><svg class="icon"><use href="#i-file"/></svg></div><h3>ตรวจทานข้อมูลจาก OCR</h3><p>ตรวจและแก้ไขรหัสวิชา ชื่อวิชา หน่วยกิต<br>และเกรดให้ถูกต้องก่อนกดตรวจสอบ</p><span class="step-tag">ตรวจสอบได้ · แก้ไขได้</span></article>
+          <svg class="icon step-arrow"><use href="#i-arrow"/></svg>
+          <article class="step"><div class="step-art"><span class="step-number">03</span><svg class="icon"><use href="#i-list"/></svg></div><h3>ดูผลการเทียบรายวิชา</h3><p>เลือกปีหลักสูตรแล้วตรวจสอบคู่เทียบ<br>รับผลลัพธ์พร้อมเหตุผลของแต่ละรายวิชา</p><span class="step-tag">ผลลัพธ์ 3 สถานะ</span></article>
+        </div>
+        <p class="demo-caption">อยากเห็นภาพการใช้งานจริง? <button class="text-link" data-open-student>ลองตรวจสอบด้วยข้อมูลตัวอย่าง <span aria-hidden="true">↗</span></button></p>
+      </div>
+    </section>
+
+    <section id="criteria" class="criteria section-space"><div class="container criteria-grid">
+      <div><span class="section-label">TRANSFER CRITERIA</span><h2>เทียบโอนได้หรือไม่<br>ตรวจสอบจากอะไรบ้าง?</h2><p class="section-intro">หลักเกณฑ์ที่ชัดเจน เพื่อผลลัพธ์ที่เข้าใจได้</p>
+        <div class="criteria-list"><div class="criterion"><span class="round-icon"><svg class="icon"><use href="#i-book"/></svg></span><div><h3>รหัสวิชา + ปีหลักสูตร</h3><p>ตรวจสอบกับคู่เทียบที่ Admin กำหนด<br>โดยอ้างอิงปีหลักสูตรที่นักศึกษาเลือก</p></div></div><div class="criterion"><span class="round-icon"><svg class="icon"><use href="#i-star"/></svg></span><div><h3>ผลการเรียนตั้งแต่ C ขึ้นไป</h3><p>รายวิชาที่นำมาเทียบต้องผ่านเกณฑ์ขั้นต่ำ<br>และมีคู่เทียบในหลักสูตรที่เลือก</p></div></div><div class="criterion"><span class="round-icon"><svg class="icon"><use href="#i-laptop"/></svg></span><div><h3>เฉพาะหลักสูตรเทคโนโลยีสารสนเทศ</h3><p>ออกแบบเพื่อช่วยตรวจสอบรายวิชา<br>สำหรับนักศึกษาในหลักสูตร IT เท่านั้น</p></div></div></div>
+      </div>
+      <div class="results-explainer"><div class="results-header"><h3>เข้าใจผลลัพธ์ทั้ง 3 สถานะ</h3><span>ตัวอย่างข้อมูล</span></div>
+        <article class="explanation-row"><div class="result-top"><span class="course-code">CS101 <span>· 3 หน่วยกิต · B+</span></span><span class="status eligible"><span aria-hidden="true">✓</span> เทียบได้</span></div><h4>การเขียนโปรแกรมเบื้องต้น</h4><p>พบคู่เทียบในปีหลักสูตรที่เลือก และเกรดผ่านเกณฑ์</p></article>
+        <article class="explanation-row"><div class="result-top"><span class="course-code">IT202 <span>· 3 หน่วยกิต · D+</span></span><span class="status ineligible"><span aria-hidden="true">×</span> เทียบไม่ได้</span></div><h4>การวิเคราะห์และออกแบบระบบ</h4><p>ผลการเรียนต่ำกว่า C จึงไม่ผ่านเงื่อนไขการเทียบ</p></article>
+        <article class="explanation-row"><div class="result-top"><span class="course-code">GE101 <span>· 3 หน่วยกิต · B</span></span><span class="status unknown"><span aria-hidden="true">−</span> ไม่พบข้อมูล</span></div><h4>ภาษาอังกฤษเพื่อการสื่อสาร</h4><p>ยังไม่มีคู่เทียบในปีหลักสูตรที่เลือก</p></article>
+        <div class="waiting-note"><svg class="icon"><use href="#i-info"/></svg><p><strong>ไม่พบข้อมูล ไม่ได้แปลว่าเทียบไม่ได้</strong><br>กรุณารอ Admin อัปเดตข้อมูลคู่เทียบ แล้วตรวจสอบอีกครั้ง</p></div>
+      </div>
+    </div></section>
+
+    <section class="admin-section"><div class="container admin-band"><div class="admin-band-icon"><svg class="icon"><use href="#i-grid"/></svg></div><div class="admin-copy"><h2>จัดการข้อมูลเบื้องหลัง เพื่อการตรวจสอบที่ตรงกัน</h2><p>สำหรับ Admin · เพิ่มและแก้ไขหลักสูตร รายวิชา คู่เทียบ พร้อมนำเข้าข้อมูลจาก Excel</p></div><button class="button admin-button" data-open-admin>สำหรับผู้ดูแลระบบ<svg class="icon"><use href="#i-arrow"/></svg></button></div></section>
+
+    <section id="faq" class="faq section-space"><div class="container faq-grid"><div><span class="section-label">GOOD TO KNOW</span><h2>เรื่องที่คุณ<br>อาจอยากรู้</h2><p>ทำความเข้าใจก่อนเริ่มตรวจสอบ<br>เพื่อให้ทุกขั้นตอนง่ายขึ้น</p></div><div class="faq-list">
+      <details><summary>ต้องเตรียมไฟล์ Transcript แบบไหน?<svg class="icon"><use href="#i-chevron"/></svg></summary><p>เตรียมไฟล์ PDF หรือรูปภาพ JPG ของใบแสดงผลการศึกษาที่อ่านรหัสวิชา ชื่อวิชา หน่วยกิต และเกรดได้ชัดเจน หลีกเลี่ยงภาพเบลอหรือข้อมูลที่ถูกตัดออก</p></details>
+      <details><summary>ถ้า OCR อ่านข้อมูลไม่ถูกต้อง ทำอย่างไร?<svg class="icon"><use href="#i-chevron"/></svg></summary><p>นักศึกษาต้องตรวจทานข้อมูลที่ OCR อ่านได้ และสามารถแก้ไขรหัสวิชา ชื่อวิชา หน่วยกิต และเกรดให้ตรงกับ Transcript ก่อนกดตรวจสอบคู่เทียบ</p></details>
+      <details><summary>หากไม่พบข้อมูลคู่เทียบ ต้องทำอย่างไร?<svg class="icon"><use href="#i-chevron"/></svg></summary><p>ตรวจสอบรหัสวิชาและปีหลักสูตรที่เลือกให้ถูกต้อง หากยังไม่พบข้อมูล กรุณารอ Admin เพิ่มหรืออัปเดตคู่เทียบแล้วกลับมาตรวจสอบอีกครั้ง ระบบจะไม่คาดเดาคู่เทียบจากชื่อวิชา</p></details>
+      <details><summary>ผลตรวจสอบถือเป็นการอนุมัติเทียบโอนหรือไม่?<svg class="icon"><use href="#i-chevron"/></svg></summary><p>ไม่ใช่ ผลลัพธ์เป็นเพียงข้อมูลช่วยตรวจสอบเบื้องต้นสำหรับหลักสูตรเทคโนโลยีสารสนเทศ ระบบไม่เชื่อมต่อ REGIS และไม่ใช่ระบบอนุมัติเทียบโอนอย่างเป็นทางการ โปรดดำเนินการตามขั้นตอนของสถาบัน</p></details>
+    </div></div></section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-inner"><div><a class="brand" href="#"><svg class="icon brand-icon"><use href="#i-cap"/></svg><span>IT Transfer<span class="brand-dot">.</span></span></a><p>ให้สิ่งที่เรียนมา เป็นจุดเริ่มต้นของก้าวต่อไป</p></div><div class="footer-note"><p>ระบบช่วยตรวจสอบการเทียบโอนรายวิชา · หลักสูตรเทคโนโลยีสารสนเทศ</p><p>ไม่เชื่อมต่อ REGIS และไม่ใช่การอนุมัติเทียบโอนอย่างเป็นทางการ</p><span>ข้อมูลตัวอย่างในหน้าแนะนำใช้เพื่อสาธิตเท่านั้น</span></div></div></footer>
+
+  <dialog id="student-dialog" class="app-dialog" aria-labelledby="student-title">
+    <div class="dialog-header"><div><span class="section-label">STUDENT DEMO</span><h2 id="student-title">ลองตรวจสอบรายวิชาของคุณ</h2></div><button class="icon-button" data-close-dialog aria-label="ปิดหน้าต่างนักศึกษา"><svg class="icon"><use href="#i-close"/></svg></button></div>
+    <div class="demo-notice"><svg class="icon"><use href="#i-info"/></svg><p><strong>พื้นที่ทดลองด้วยข้อมูลตัวอย่าง</strong> ยังไม่เชื่อม OCR หรือฐานข้อมูลจริง ไฟล์ที่เลือกจะอยู่ในเบราว์เซอร์และไม่ถูกส่งไปที่ใด ผลลัพธ์นี้ไม่ใช่การอนุมัติเทียบโอน</p></div>
+    <form id="student-form">
+      <div class="demo-controls"><label class="file-picker"><svg class="icon"><use href="#i-upload"/></svg><span>เลือก Transcript <small>PDF / JPG · ไม่เกิน 10 MB</small></span><input id="transcript-file" type="file" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg"></label><label class="year-field">ปีหลักสูตร IT ที่ต้องการเทียบ<select id="curriculum-year"><option value="2565">หลักสูตร พ.ศ. 2565 (ตัวอย่าง)</option><option value="2567">หลักสูตร พ.ศ. 2567 (ตัวอย่าง)</option></select></label></div>
+      <p id="file-message" class="file-message" role="status"></p>
+      <div class="editor-heading"><div><h3>ตรวจทานและแก้ไขข้อมูลรายวิชา</h3><p>ข้อมูลด้านล่างเป็นตัวอย่าง ไม่ได้อ่านจากไฟล์ที่คุณเลือก</p></div><button class="text-link" id="reset-demo" type="button">คืนค่าตัวอย่าง</button></div>
+      <div class="table-scroll"><table class="editor-table"><thead><tr><th scope="col">รหัสวิชา</th><th scope="col">ชื่อรายวิชา</th><th scope="col">หน่วยกิต</th><th scope="col">เกรด</th></tr></thead><tbody id="course-editor"></tbody></table></div>
+      <label class="review-confirm"><input type="checkbox" id="reviewed" required><span>ฉันตรวจทานรหัสวิชา ชื่อวิชา หน่วยกิต และเกรดแล้ว</span></label>
+      <p id="form-error" class="form-error" role="alert"></p>
+      <div class="dialog-actions"><span>จับคู่จากรหัสวิชาและปีหลักสูตรเท่านั้น</span><button class="button primary" type="submit">ตรวจสอบคู่เทียบ<svg class="icon"><use href="#i-arrow"/></svg></button></div>
+    </form>
+    <section id="demo-results" class="demo-results" aria-live="polite" hidden><h3 tabindex="-1">ผลการตรวจสอบเบื้องต้น</h3><p id="results-summary"></p><div id="result-list"></div><p class="result-disclaimer">ข้อมูลคู่เทียบทั้งหมดเป็นข้อมูลสาธิต หากไม่พบข้อมูลต้องรอ Admin อัปเดตคู่เทียบ</p></section>
+  </dialog>
+
+  <dialog id="admin-dialog" class="app-dialog admin-dialog" aria-labelledby="admin-title"><div class="dialog-header"><div><span class="section-label">FOR ADMINISTRATORS</span><h2 id="admin-title">ข้อมูลที่ Admin ดูแล</h2></div><button class="icon-button" data-close-dialog aria-label="ปิดหน้าต่างผู้ดูแลระบบ"><svg class="icon"><use href="#i-close"/></svg></button></div><p class="admin-dialog-intro">แหล่งข้อมูลหลักที่ใช้ในการตรวจสอบการเทียบโอนของนักศึกษา</p><ol class="admin-feature-list"><li><span>01</span><div><h3>จัดการหลักสูตร</h3><p>เพิ่มและแก้ไขหลักสูตรเทคโนโลยีสารสนเทศ แยกตามปีหลักสูตร</p></div></li><li><span>02</span><div><h3>จัดการรายวิชา</h3><p>เพิ่มและแก้ไขรหัสวิชา ชื่อรายวิชา และจำนวนหน่วยกิต</p></div></li><li><span>03</span><div><h3>กำหนดคู่เทียบรายวิชา</h3><p>เชื่อมรหัสวิชาต้นทางกับรายวิชาในปีหลักสูตรที่กำหนด และอัปเดตคู่เทียบที่ยังไม่มีข้อมูล</p></div></li><li><span>04</span><div><h3>นำเข้าข้อมูลจาก Excel</h3><p>นำเข้าข้อมูลหลักสูตร รายวิชา และคู่เทียบ เพื่อลดการกรอกข้อมูลทีละรายการ</p></div></li></ol><div class="demo-notice"><svg class="icon"><use href="#i-info"/></svg><p>ส่วนนี้แสดงขอบเขตการทำงานของ Admin ในหน้า Landing Page ยังไม่มีระบบเข้าสู่ระบบ การบันทึกข้อมูล หรือการนำเข้า Excel จริง</p></div><button class="button primary full-width" data-close-dialog>เข้าใจแล้ว</button></dialog>
+</body>
+</html>

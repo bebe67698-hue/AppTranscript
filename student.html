@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบนักศึกษา — IT Transfer</title>
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="portal.css">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/vendor/tesseract/tesseract.min.js" defer></script><script src="/shared/transcript.cjs" defer></script><script src="/portal/student.js" type="module"></script>
+</head>
+<body class="portal-body">
+  <a class="skip-link" href="#content">ข้ามไปยังเนื้อหา</a>
+  <div id="auth-panel" class="auth-panel" hidden></div>
+  <div id="workspace" class="workspace" hidden>
+    <aside id="sidebar" class="sidebar"><a href="/" class="brand">IT <span class="brand-dot">Transfer.</span></a><p class="sidebar-caption">ระบบช่วยตรวจสอบการเทียบโอน<br>หลักสูตรเทคโนโลยีสารสนเทศ</p><div class="sidebar-nav" aria-label="เมนูนักศึกษา"><button data-nav="check" class="active"><span aria-hidden="true">▧</span> ตรวจสอบรายวิชา</button><button data-nav="history"><span aria-hidden="true">◷</span> ประวัติการตรวจสอบ</button></div><div class="sidebar-bottom"><a href="/">← กลับหน้าหลัก</a><button id="logout">ออกจากระบบ</button></div></aside>
+    <div class="portal-main">
+      <header class="portal-topbar"><button id="portal-menu" class="portal-menu" aria-label="เปิดเมนูระบบ" aria-controls="sidebar" aria-expanded="false">☰</button><span>ระบบนักศึกษา <span class="breadcrumb-separator">/</span> ตรวจสอบรายวิชา</span><div class="user-chip"><span class="avatar">S</span><span id="user-name"></span><small>นักศึกษา</small></div></header>
+      <main id="content" class="portal-content"><div id="notice" class="notice" role="status" hidden></div>
+        <section data-view="check">
+          <div class="page-heading"><div><span class="section-label">STUDENT EVALUATION</span><h1>ตรวจสอบการเทียบโอนรายวิชา</h1><p>ระบุรหัสนักศึกษา ถ่ายภาพ/อัปโหลด Transcript เพื่อตรวจสอบผลเทียบโอนทางการ</p></div></div>
+          <ol class="progress-steps"><li class="active"><span>1</span> ระบุรหัสและอัปโหลด Transcript</li><li><span>2</span> ตรวจทานรายวิชา</li><li><span>3</span> ผลการเทียบโอน</li></ol>
+          <div class="student-upload-grid">
+            <section class="surface upload-surface">
+              <span class="upload-glyph" aria-hidden="true">↥</span>
+              <h2>อัปโหลดใบ Transcript ของคุณ</h2>
+              <p>รูปถ่าย JPG หรือไฟล์ PDF · เลือกได้มากกว่า 1 รูป (เช่น หน้า 1 และ หน้า 2) · ไฟล์ละไม่เกิน 10 MB</p>
+              <label class="field" style="text-align:left; margin-top:15px;">
+                รหัสประจำตัวนักศึกษา
+                <input id="student-id-input" type="text" placeholder="เช่น 69242206001-6" required maxlength="50">
+              </label>
+              <label class="field file-control">
+                เลือกไฟล์ภาพถ่าย (เลือกหลายรูปพร้อมกันได้) หรือ PDF ของ Transcript
+                <input id="student-file" type="file" accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png,application/pdf" multiple>
+              </label>
+              <div class="upload-actions">
+                <button id="read-document" class="button primary" type="button">อ่านข้อมูลจาก Transcript</button>
+                <button id="cancel-ocr" class="button secondary" type="button" hidden>ยกเลิก</button>
+              </div>
+              <p id="ocr-progress" class="ocr-progress" role="status"></p>
+              <a id="open-original" class="text-link original-link" target="_blank" rel="noopener noreferrer" hidden>เปิดเอกสารต้นฉบับเพื่อตรวจทาน ↗</a>
+            </section>
+            <section class="surface curriculum-surface">
+              <h2>คำแนะนำการตรวจสอบ</h2>
+              <div class="privacy-note">
+                <span aria-hidden="true">✓</span>
+                <div>
+                  <strong>ตรวจสอบผ่านระบบอย่างเป็นทางการ</strong>
+                  <p>ระบบจะอ่านรหัสวิชาและเกรดจากใบ Transcript เพื่อตรวจสอบกับข้อมูลผลเทียบโอนที่แอดมินนำเข้าไว้</p>
+                </div>
+              </div>
+              <p class="muted">1. กรอกรหัสประจำตัวนักศึกษาให้ถูกต้อง (มีหรือไม่มีขีดก็ได้)</p>
+              <p class="muted">2. ถ่ายรูปหรืออัปโหลด Transcript ที่เห็นรหัสวิชาและเกรดชัดเจน</p>
+              <p class="muted">3. ตรวจทานรายวิชาก่อนกดยืนยันตรวจสอบผลการเทียบโอน</p>
+            </section>
+          </div>
+          <details id="raw-details" class="raw-details surface" hidden><summary>ข้อความที่อ่านได้จากเอกสาร</summary><p class="muted">ปรับข้อความแล้วกดแยกข้อมูลใหม่ หรือแก้ไขในตารางด้านล่างโดยตรง ข้อความแต่ละบรรทัดควรเรียง รหัสวิชา ชื่อวิชา หน่วยกิต เกรด</p><label class="field">ข้อความ OCR<textarea id="raw-text" rows="9" maxlength="100000"></textarea></label><button id="parse-text" class="button secondary" type="button">แยกข้อมูลจากข้อความอีกครั้ง</button></details>
+          <form id="review-form" class="surface review-surface"><div class="section-toolbar"><div><h2>ตรวจทานข้อมูลรายวิชาจาก Transcript</h2><p id="row-count" class="muted">ยังไม่มีรายวิชา</p></div><button id="add-course-row" type="button" class="button secondary">+ เพิ่มแถว</button></div><div class="portal-table-scroll"><table class="review-table"><thead><tr><th>รหัสวิชา</th><th>ชื่อรายวิชา</th><th>หน่วยกิต</th><th>เกรด</th><th>จัดการ</th></tr></thead><tbody id="review-rows"></tbody></table></div><p id="review-empty" class="empty-state">กรอกรหัสนักศึกษาและอัปโหลด Transcript เพื่ออ่านข้อมูลรายวิชา</p><div class="review-bottom"><label class="review-confirm"><input type="checkbox" id="review-confirm" required>ฉันตรวจทานข้อมูลทั้งหมดกับ Transcript แล้ว</label><button id="check-courses" class="button primary" type="submit">ตรวจสอบผลการเทียบโอน →</button></div></form>
+          <section id="student-results" class="surface results-surface" hidden>
+            <div class="section-toolbar">
+              <div>
+                <h2 tabindex="-1">สรุปผลการเทียบโอนผลการเรียนรายบุคคล</h2>
+                <p id="result-meta" class="muted"></p>
+              </div>
+              <button id="print-results" class="button secondary" type="button">🖨 พิมพ์แบบสรุปผลเทียบโอน</button>
+            </div>
+            <div id="student-result-meta-chips" class="stat-chips"></div>
+            <div id="result-counts" class="result-counts" style="margin-top:15px;"></div>
+            <div id="student-result-table-container" style="margin:20px 0;"></div>
+            <div id="student-result-list" hidden></div>
+            <div class="info-banner">
+              <strong>แบบสรุปผลการเทียบโอนผลการเรียนรายวิชา / กลุ่มวิชา</strong>
+              <p>โครงการรับนักศึกษาระดับ ปวส. เทียบโอนเข้าศึกษาต่อระดับปริญญาตรี คณะวิทยาศาสตร์และเทคโนโลยีการเกษตร มทร.ล้านนา</p>
+            </div>
+          </section>
+        </section>
+        <section data-view="history" hidden><div class="page-heading"><div><span class="section-label">YOUR RECORDS</span><h1>ประวัติการตรวจสอบ</h1><p>ผลที่บันทึกไว้ ณ เวลาตรวจสอบ · สามารถเปิดดูและพิมพ์ผลย้อนหลังได้ตลอดเวลา</p></div><button id="refresh-history" class="button secondary">↻ รีเฟรช</button></div><div id="history-list" class="surface"></div></section>
+
+      </main><footer class="portal-footer"><strong>IT Transfer.</strong><span>เฉพาะหลักสูตร IT · ไม่เชื่อม REGIS · ไม่ใช่การอนุมัติเทียบโอนอย่างเป็นทางการ</span></footer>
+    </div>
+  </div>
+  <noscript>กรุณาเปิด JavaScript เพื่อใช้งานระบบ</noscript>
+</body>
+</html>

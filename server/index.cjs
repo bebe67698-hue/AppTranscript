@@ -1,0 +1,13 @@
+'use strict';
+const path=require('node:path');
+const fs=require('node:fs');
+const {createStore}=require('./store.cjs');
+const {createApp}=require('./app.cjs');
+const dataDir=path.resolve(__dirname,'..','data');
+fs.mkdirSync(dataDir,{recursive:true});
+const store=createStore(path.join(dataDir,'transfer.sqlite'));
+const server=createApp(store);
+const port=Number(process.env.PORT || 4174);
+server.listen(port,'0.0.0.0',()=>console.log(`IT Transfer is running on port ${port}`));
+server.on('error',error=>{console.error(error.code==='EADDRINUSE'?'Port is in use. Choose another PORT.':'Server could not start.');store.close();process.exitCode=1;});
+for(const signal of ['SIGINT','SIGTERM']) process.on(signal,()=>server.close(()=>{store.close();process.exit(0);}));
